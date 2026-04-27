@@ -1,4 +1,4 @@
-import { useEffect, useRef, type HTMLAttributes, type ElementType } from "react";
+import { useEffect, useRef, useState, type HTMLAttributes, type ElementType } from "react";
 
 type Props = HTMLAttributes<HTMLElement> & {
   as?: ElementType;
@@ -8,8 +8,9 @@ type Props = HTMLAttributes<HTMLElement> & {
 };
 
 /**
- * Premium scroll reveal. Uses IntersectionObserver + CSS transitions.
- * Stagger via `delay` (ms). Prefers-reduced-motion friendly.
+ * Premium scroll reveal. Progressive-enhancement safe:
+ * content is always visible; we only enable the hidden-then-reveal
+ * transition once JS mounts and IntersectionObserver is ready.
  */
 export function Reveal({
   as,
@@ -23,36 +24,69 @@ export function Reveal({
 }: Props) {
   const Comp = (as ?? "div") as ElementType;
   const ref = useRef<HTMLElement | null>(null);
+  const [armed, setArmed] = useState(false);
+  const [revealed, setRevealed] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      el.classList.add("is-revealed");
+
+    if (
+      typeof window === "undefined" ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      typeof IntersectionObserver === "undefined"
+    ) {
+      setRevealed(true);
       return;
     }
+
+    // Arm: switch element into the animated hidden state, then observe.
+    setArmed(true);
+
+    // Check initial visibility in the next frame after we've armed.
+    const rafId = requestAnimationFrame(() => {
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      if (rect.top < vh * 0.92 && rect.bottom > 0) {
+        setRevealed(true);
+        return;
+      }
+    });
+
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            (entry.target as HTMLElement).classList.add("is-revealed");
+            setRevealed(true);
             if (once) io.unobserve(entry.target);
           } else if (!once) {
-            (entry.target as HTMLElement).classList.remove("is-revealed");
+            setRevealed(false);
           }
         }
       },
-      { threshold: 0.15, rootMargin: "0px 0px -8% 0px" },
+      { threshold: 0.12, rootMargin: "0px 0px -6% 0px" },
     );
     io.observe(el);
-    return () => io.disconnect();
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+    };
   }, [once]);
+
+  const cls = [
+    armed ? `reveal reveal-${variant}` : "",
+    armed && revealed ? "is-revealed" : "",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <Comp
       ref={ref as never}
-      className={`reveal reveal-${variant} ${className}`}
-      style={{ ...style, transitionDelay: `${delay}ms` }}
+      className={cls}
+      style={{ ...style, transitionDelay: armed ? `${delay}ms` : undefined }}
       {...rest}
     >
       {children}
