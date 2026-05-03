@@ -537,17 +537,17 @@ function FlowLines({ selected }: { selected: Record<SourceId, boolean> }) {
       viewBox="0 0 200 240"
       preserveAspectRatio="none"
       aria-hidden
-      className="absolute inset-0 h-full w-full overflow-visible"
+      className="absolute inset-0 h-full w-full overflow-visible text-primary"
     >
       <defs>
         <linearGradient id="flow-in" x1="0" x2="1" y1="0" y2="0">
-          <stop offset="0" stopColor="color-mix(in oklab, var(--primary) 0%, transparent)" />
-          <stop offset="0.5" stopColor="color-mix(in oklab, var(--primary) 70%, transparent)" />
-          <stop offset="1" stopColor="color-mix(in oklab, var(--primary) 90%, transparent)" />
+          <stop offset="0" stopColor="currentColor" stopOpacity="0" />
+          <stop offset="0.5" stopColor="currentColor" stopOpacity="0.7" />
+          <stop offset="1" stopColor="currentColor" stopOpacity="1" />
         </linearGradient>
         <linearGradient id="flow-out" x1="0" x2="1" y1="0" y2="0">
-          <stop offset="0" stopColor="color-mix(in oklab, var(--primary) 90%, transparent)" />
-          <stop offset="1" stopColor="color-mix(in oklab, var(--primary) 0%, transparent)" />
+          <stop offset="0" stopColor="currentColor" stopOpacity="1" />
+          <stop offset="1" stopColor="currentColor" stopOpacity="0" />
         </linearGradient>
       </defs>
       {left.map(({ y, id }, i) => {
