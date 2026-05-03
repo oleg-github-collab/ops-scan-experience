@@ -31,7 +31,7 @@ function QuickScan() {
           to="/connect"
           className="mt-10 inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground shadow-glow"
         >
-          Or run a Deep Scan instead <ArrowRight className="h-4 w-4" />
+          Run a Deep Scan instead <ArrowRight className="h-4 w-4" />
         </Link>
       </main>
       <Footer />
