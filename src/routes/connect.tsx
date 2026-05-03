@@ -523,34 +523,74 @@ function Deliver({
   );
 }
 
-function FlowLines() {
+function FlowLines({ selected }: { selected: Record<SourceId, boolean> }) {
+  // 4 inputs (left) -> core, 3 outputs (right)
+  const left: Array<{ y: number; id: SourceId }> = [
+    { y: 30, id: "google" },
+    { y: 90, id: "slack" },
+    { y: 150, id: "clickup" },
+    { y: 210, id: "notion" },
+  ];
+  const right = [60, 120, 180];
   return (
     <svg
       viewBox="0 0 200 240"
       preserveAspectRatio="none"
       aria-hidden
-      className="absolute inset-0 h-full w-full text-primary/35"
+      className="absolute inset-0 h-full w-full overflow-visible"
     >
-      {[40, 90, 150, 200].map((y, i) => (
-        <path
-          key={i}
-          d={`M0 ${y} C 60 ${y}, 70 120, 100 120`}
-          stroke="currentColor"
-          strokeWidth="1"
-          strokeDasharray="3 4"
-          fill="none"
-        />
-      ))}
-      {[60, 110, 170].map((y, i) => (
-        <path
-          key={`r${i}`}
-          d={`M100 120 C 130 120, 140 ${y}, 200 ${y}`}
-          stroke="currentColor"
-          strokeWidth="1"
-          strokeDasharray="3 4"
-          fill="none"
-        />
-      ))}
+      <defs>
+        <linearGradient id="flow-in" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stopColor="color-mix(in oklab, var(--primary) 0%, transparent)" />
+          <stop offset="0.5" stopColor="color-mix(in oklab, var(--primary) 70%, transparent)" />
+          <stop offset="1" stopColor="color-mix(in oklab, var(--primary) 90%, transparent)" />
+        </linearGradient>
+        <linearGradient id="flow-out" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stopColor="color-mix(in oklab, var(--primary) 90%, transparent)" />
+          <stop offset="1" stopColor="color-mix(in oklab, var(--primary) 0%, transparent)" />
+        </linearGradient>
+      </defs>
+      {left.map(({ y, id }, i) => {
+        const active = selected[id];
+        const d = `M0 ${y} C 60 ${y}, 70 120, 100 120`;
+        return (
+          <g key={id}>
+            <path d={d} stroke="rgba(255,255,255,0.08)" strokeWidth="1" fill="none" />
+            <path
+              d={d}
+              stroke="url(#flow-in)"
+              strokeWidth={active ? 1.4 : 0.8}
+              fill="none"
+              strokeDasharray="6 10"
+              style={{
+                opacity: active ? 1 : 0.25,
+                animation: `flow-dash 2.4s linear infinite`,
+                animationDelay: `${i * 0.25}s`,
+                transition: "opacity 500ms var(--ease-out-long), stroke-width 500ms var(--ease-out-long)",
+              }}
+            />
+          </g>
+        );
+      })}
+      {right.map((y, i) => {
+        const d = `M100 120 C 130 120, 140 ${y}, 200 ${y}`;
+        return (
+          <g key={`r${i}`}>
+            <path d={d} stroke="rgba(255,255,255,0.08)" strokeWidth="1" fill="none" />
+            <path
+              d={d}
+              stroke="url(#flow-out)"
+              strokeWidth="1.2"
+              fill="none"
+              strokeDasharray="6 10"
+              style={{
+                animation: `flow-dash-out 2.6s linear infinite`,
+                animationDelay: `${i * 0.3}s`,
+              }}
+            />
+          </g>
+        );
+      })}
     </svg>
   );
 }
