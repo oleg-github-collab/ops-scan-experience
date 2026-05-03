@@ -202,10 +202,18 @@ function ConnectPage() {
 
                     {/* Scanner core */}
                     <div className="relative hidden md:flex md:items-center md:justify-center">
-                      <FlowLines />
+                      <FlowLines selected={selected} />
                       <div className="relative">
                         <div className="absolute inset-[-30%] rounded-full bg-[radial-gradient(closest-side,color-mix(in_oklab,var(--primary)_45%,transparent),transparent_70%)] blur-2xl animate-hero-flicker" />
+                        {/* concentric pulse rings */}
+                        <div className="pointer-events-none absolute inset-0 grid place-items-center">
+                          <span className="absolute h-44 w-44 rounded-full border border-primary/30 [animation:core-ring_3.6s_ease-out_infinite]" />
+                          <span className="absolute h-44 w-44 rounded-full border border-primary/20 [animation:core-ring_3.6s_ease-out_infinite_1.2s]" />
+                          <span className="absolute h-44 w-44 rounded-full border border-primary/10 [animation:core-ring_3.6s_ease-out_infinite_2.4s]" />
+                        </div>
                         <div className="relative grid h-44 w-44 place-items-center rounded-full border border-primary/40 bg-[oklch(0.18_0.04_40)] shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_30px_80px_-30px_color-mix(in_oklab,var(--primary)_70%,transparent)]">
+                          {/* sweeping conic scanner */}
+                          <span className="pointer-events-none absolute inset-1 rounded-full opacity-60 [background:conic-gradient(from_0deg,transparent_0deg,color-mix(in_oklab,var(--primary)_60%,transparent)_40deg,transparent_80deg,transparent_360deg)] [mask:radial-gradient(circle,transparent_56%,black_57%,black_72%,transparent_73%)] [animation:core-sweep_4.2s_linear_infinite]" />
                           <div className="text-center">
                             <div className="font-display text-base font-bold tracking-[0.18em] text-primary">
                               OPSLAB
