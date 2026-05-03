@@ -202,10 +202,18 @@ function ConnectPage() {
 
                     {/* Scanner core */}
                     <div className="relative hidden md:flex md:items-center md:justify-center">
-                      <FlowLines />
+                      <FlowLines selected={selected} />
                       <div className="relative">
                         <div className="absolute inset-[-30%] rounded-full bg-[radial-gradient(closest-side,color-mix(in_oklab,var(--primary)_45%,transparent),transparent_70%)] blur-2xl animate-hero-flicker" />
+                        {/* concentric pulse rings */}
+                        <div className="pointer-events-none absolute inset-0 grid place-items-center">
+                          <span className="absolute h-44 w-44 rounded-full border border-primary/30 [animation:core-ring_3.6s_ease-out_infinite]" />
+                          <span className="absolute h-44 w-44 rounded-full border border-primary/20 [animation:core-ring_3.6s_ease-out_infinite_1.2s]" />
+                          <span className="absolute h-44 w-44 rounded-full border border-primary/10 [animation:core-ring_3.6s_ease-out_infinite_2.4s]" />
+                        </div>
                         <div className="relative grid h-44 w-44 place-items-center rounded-full border border-primary/40 bg-[oklch(0.18_0.04_40)] shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_30px_80px_-30px_color-mix(in_oklab,var(--primary)_70%,transparent)]">
+                          {/* sweeping conic scanner */}
+                          <span className="pointer-events-none absolute inset-1 rounded-full opacity-60 [background:conic-gradient(from_0deg,transparent_0deg,color-mix(in_oklab,var(--primary)_60%,transparent)_40deg,transparent_80deg,transparent_360deg)] [mask:radial-gradient(circle,transparent_56%,black_57%,black_72%,transparent_73%)] [animation:core-sweep_4.2s_linear_infinite]" />
                           <div className="text-center">
                             <div className="font-display text-base font-bold tracking-[0.18em] text-primary">
                               OPSLAB
@@ -515,34 +523,74 @@ function Deliver({
   );
 }
 
-function FlowLines() {
+function FlowLines({ selected }: { selected: Record<SourceId, boolean> }) {
+  // 4 inputs (left) -> core, 3 outputs (right)
+  const left: Array<{ y: number; id: SourceId }> = [
+    { y: 30, id: "google" },
+    { y: 90, id: "slack" },
+    { y: 150, id: "clickup" },
+    { y: 210, id: "notion" },
+  ];
+  const right = [60, 120, 180];
   return (
     <svg
       viewBox="0 0 200 240"
       preserveAspectRatio="none"
       aria-hidden
-      className="absolute inset-0 h-full w-full text-primary/35"
+      className="absolute inset-0 h-full w-full overflow-visible text-primary"
     >
-      {[40, 90, 150, 200].map((y, i) => (
-        <path
-          key={i}
-          d={`M0 ${y} C 60 ${y}, 70 120, 100 120`}
-          stroke="currentColor"
-          strokeWidth="1"
-          strokeDasharray="3 4"
-          fill="none"
-        />
-      ))}
-      {[60, 110, 170].map((y, i) => (
-        <path
-          key={`r${i}`}
-          d={`M100 120 C 130 120, 140 ${y}, 200 ${y}`}
-          stroke="currentColor"
-          strokeWidth="1"
-          strokeDasharray="3 4"
-          fill="none"
-        />
-      ))}
+      <defs>
+        <linearGradient id="flow-in" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stopColor="currentColor" stopOpacity="0" />
+          <stop offset="0.5" stopColor="currentColor" stopOpacity="0.7" />
+          <stop offset="1" stopColor="currentColor" stopOpacity="1" />
+        </linearGradient>
+        <linearGradient id="flow-out" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stopColor="currentColor" stopOpacity="1" />
+          <stop offset="1" stopColor="currentColor" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {left.map(({ y, id }, i) => {
+        const active = selected[id];
+        const d = `M0 ${y} C 60 ${y}, 70 120, 100 120`;
+        return (
+          <g key={id}>
+            <path d={d} stroke="rgba(255,255,255,0.08)" strokeWidth="1" fill="none" />
+            <path
+              d={d}
+              stroke="url(#flow-in)"
+              strokeWidth={active ? 1.4 : 0.8}
+              fill="none"
+              strokeDasharray="6 10"
+              style={{
+                opacity: active ? 1 : 0.25,
+                animation: `flow-dash 2.4s linear infinite`,
+                animationDelay: `${i * 0.25}s`,
+                transition: "opacity 500ms var(--ease-out-long), stroke-width 500ms var(--ease-out-long)",
+              }}
+            />
+          </g>
+        );
+      })}
+      {right.map((y, i) => {
+        const d = `M100 120 C 130 120, 140 ${y}, 200 ${y}`;
+        return (
+          <g key={`r${i}`}>
+            <path d={d} stroke="rgba(255,255,255,0.08)" strokeWidth="1" fill="none" />
+            <path
+              d={d}
+              stroke="url(#flow-out)"
+              strokeWidth="1.2"
+              fill="none"
+              strokeDasharray="6 10"
+              style={{
+                animation: `flow-dash-out 2.6s linear infinite`,
+                animationDelay: `${i * 0.3}s`,
+              }}
+            />
+          </g>
+        );
+      })}
     </svg>
   );
 }
