@@ -4,6 +4,7 @@ import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
 import { Cursor } from "@/components/site/Cursor";
 import { Reveal } from "@/components/site/Reveal";
+import { ChatWidget } from "@/components/site/ChatWidget";
 import {
   IconAgencies,
   IconSoftware,
@@ -454,6 +455,7 @@ function Index() {
       </section>
 
       <Footer />
+      <ChatWidget />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 export function Nav() {
   return (
@@ -17,15 +18,15 @@ export function Nav() {
           </span>
         </a>
         <nav className="hidden items-center gap-7 text-sm md:flex">
-          <a href="#how" className="hover:text-primary transition-colors">
-            How it works
-          </a>
-          <a href="#paths" className="hover:text-primary transition-colors">
-            Audit paths
-          </a>
-          <a href="#trust" className="hover:text-primary transition-colors">
-            Trust &amp; privacy
-          </a>
+          <Link to="/connect" className="hover:text-primary transition-colors" activeProps={{ className: "text-primary" }}>
+            Connect
+          </Link>
+          <Link to="/quick-scan" className="hover:text-primary transition-colors" activeProps={{ className: "text-primary" }}>
+            Quick scan
+          </Link>
+          <Link to="/privacy" className="hover:text-primary transition-colors" activeProps={{ className: "text-primary" }}>
+            Privacy
+          </Link>
           <a
             href="https://www.opslab.uk/"
             target="_blank"
