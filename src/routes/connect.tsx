@@ -33,7 +33,7 @@ type Source = {
   id: SourceId;
   name: string;
   category: string;
-  Mark: (p: React.SVGProps<SVGSVGElement>) => JSX.Element;
+  Mark: (p: React.SVGProps<SVGSVGElement>) => React.ReactElement;
   signal: string;
   scope: string;
 };
